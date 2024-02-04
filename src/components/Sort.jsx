@@ -1,12 +1,11 @@
 import { useState } from "react";
 
-function Sort() {
+function Sort({ sortTypes, sortId, setSortId }) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(0);
-  const list = ["популярности", "цене", "алфавиту"];
-  const sortName = list[selected];
+
+  const sortName = sortTypes[sortId].title;
   const onClickListItem = (i) => {
-    setSelected(i);
+    setSortId(i);
     setOpen(!open);
   }
   return (
@@ -22,7 +21,11 @@ function Sort() {
       {
         open && <div className="sort__popup">
           <ul>
-            {list.map((name, i) => <li onClick={() => onClickListItem(i)} className={selected === i && 'active'}>{name}</li>)}
+            {sortTypes.map((sort, i) =>
+              <li key={i} onClick={() => onClickListItem(i)} className={sortId === i ? 'active' : ''}>
+                {sort.title}
+              </li>
+            )}
           </ul>
         </div>
       }
