@@ -5,11 +5,14 @@ import Categories from "../components/Categories.jsx";
 import Sort from "../components/Sort.jsx";
 import PizzaBlock from "../components/PizzaBlock";
 import Skeleton from "../components/PizzaBlock/Skeleton.jsx";
-const Home = () => {
+import Pagination from "../components/Pagination/index.jsx";
+const Home = ({ searchValue }) => {
    const [items, setItems] = useState([]);
+   const pizzas = items;
    const [isLoading, setIsLoading] = useState(true)
    const [categoryId, setCategoryId] = useState(0);
    const [sortId, setSortId] = useState(0);
+   const [currentPage, setCurrentPage] = useState(1);
    const categories = ["Все", "Мясные", "Вегетарианская", "Гриль", "Острые", "Закрытые"];
    const sortTypes = [
       { title: "популярности (asc)", sort: "rating", type: "asc" },
@@ -21,7 +24,7 @@ const Home = () => {
    ];
    useEffect(() => {
       setIsLoading(true)
-      fetch(`https://65bdcbe5b51f9b29e933ae6e.mockapi.io/items?sortBy=${sortTypes[sortId].sort}&order=${sortTypes[sortId].type}${categoryId > 0 ? '&category=' + categoryId : ''}`)
+      fetch(`https://65bdcbe5b51f9b29e933ae6e.mockapi.io/items?page=${currentPage}&limit=3&sortBy=${sortTypes[sortId].sort}&order=${sortTypes[sortId].type}${categoryId > 0 ? '&category=' + categoryId : ''}${searchValue ? '&search=' + searchValue : ''}`)
          .then(res => {
             return res.json();
          }).then(json => {
@@ -29,7 +32,7 @@ const Home = () => {
             setIsLoading(false)
          })
       window.scrollTo(0, 0)
-   }, [categoryId, sortId])
+   }, [categoryId, sortId, searchValue, currentPage])
 
    return (
       <div className="container">
@@ -40,8 +43,9 @@ const Home = () => {
          <h2 className="content__title">Все пиццы</h2>
          <div className="content__items">
             {isLoading && [...new Array(6)].map((_, i) => <Skeleton key={i} />)}
-            {!isLoading && items.map(obj => <PizzaBlock {...obj} key={obj.id} />)}
+            {!isLoading && pizzas.map(obj => <PizzaBlock {...obj} key={obj.id} />)}
          </div>
+         <Pagination setCurrentPage={(page) => setCurrentPage(page)} />
       </div>
    )
 }
